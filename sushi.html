@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eljuga - Tu tienda de videojuegos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Animaciones personalizadas */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        
+        /* Efecto hover para las cartas de sushi */
+        .sushi-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Active navigation link style */
+        nav a.active {
+            color: #ef4444 !important;
+            font-weight: 500;
+        }
+        
+        /* Inicio link style when other sections are active */
+        nav a[href="#home"]:not(.active),
+        #mobile-home-link:not(.active) {
+            color: #374151 !important;
+        }
+        
+        /* Inicio link style when other sections are active */
+        nav a[href="#home"]:not(.active) {
+            color: #374151 !important;
+        }
+        
+        /* Estilo para el botón de reserva */
+        .reserve-btn {
+            background: linear-gradient(45deg, #ef4444, #f97316);
+            transition: all 0.3s ease;
+        }
+        
+        .reserve-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3), 0 4px 6px -2px rgba(239, 68, 68, 0.05);
+        }
+        
+        /* Estilo para el overlay del menú móvil */
+        .mobile-menu-overlay {
+            transition: all 0.3s ease;
+        }
+        
+        /* Estilo para el carrito de compras */
+        .cart-item {
+            transition: all 0.2s ease;
+        }
+        
+        .cart-item:hover {
+            background-color: rgba(254, 242, 242, 0.5);
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+    <!-- Header/Navbar -->
+    <header class="fixed w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-fish text-red-500 text-2xl mr-2"></i>
+                <a href="#" class="text-2xl font-bold text-red-500">Eljuga</a>
+            </div>
+            
+            <!-- Menú desktop -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#home" class="text-red-500 font-medium hover:text-red-600 transition">Inicio</a>
+                <a href="#menu" class="text-gray-700 hover:text-red-500 transition">Menú</a>
+                <a href="#gallery" class="text-gray-700 hover:text-red-500 transition">Galería</a>
+                <a href="#about" class="text-gray-700 hover:text-red-500 transition">Nosotros</a>
+                <a href="#contact" class="text-gray-700 hover:text-red-500 transition">Contacto</a>
+            </nav>
+            
+            <!-- Iconos de carrito y móvil -->
+            <div class="flex items-center space-x-4">
+                <div class="relative cursor-pointer" id="cart-icon">
+                    <i class="fas fa-shopping-cart text-gray-700 text-xl hover:text-red-500"></i>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" id="cart-count">0</span>
+                </div>
+                
+                <button class="md:hidden text-gray-700 focus:outline-none" id="mobile-menu-button">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Menú móvil -->
+        <div class="mobile-menu-overlay hidden fixed inset-0 bg-black bg-opacity-50 z-50" id="mobile-menu">
+            <div class="absolute top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out">
+                <div class="flex justify-between items-center p-4 border-b">
+                    <span class="text-xl font-bold text-red-500">Menú</span>
+                    <button id="close-mobile-menu" class="text-gray-500 hover:text-red-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <nav class="flex flex-col p-4 space-y-4">
+                    <a href="#home" class="text-gray-700 hover:text-red-500 py-2 border-b border-gray-100" id="mobile-home-link">Inicio</a>
+                    <a href="#menu" class="text-gray-700 hover:text-red-500 py-2 border-b border-gray-100">Menú</a>
+                    <a href="#gallery" class="text-gray-700 hover:text-red-500 py-2 border-b border-gray-100">Galería</a>
+                    <a href="#about" class="text-gray-700 hover:text-red-500 py-2 border-b border-gray-100">Nosotros</a>
+                    <a href="#contact" class="text-gray-700 hover:text-red-500 py-2 border-b border-gray-100">Contacto</a>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Carrito de compras -->
+        <div class="hidden fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 overflow-y-auto" id="shopping-cart">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold">Tu Pedido</h3>
+                <button id="close-cart" class="text-gray-500 hover:text-red-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4" id="cart-items">
+                <!-- Los items del carrito se agregarán aquí dinámicamente -->
+                <p class="text-gray-500 text-center py-8">Tu carrito está vacío</p>
+            </div>
+            <div class="p-4 border-t">
+                <div class="flex justify-between mb-4">
+                    <span class="font-bold">Total:</span>
+                    <span class="font-bold" id="cart-total">$0.00</span>
+                </div>
+                <form id="checkout-form" action="https://formsubmit.co/el/mituca" method="POST">
+                    <input type="hidden" name="_subject" value="Nuevo pedido de Eljuga">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="cart-items" id="cart-items-data">
+                    <input type="hidden" name="total" id="cart-total-data">
+                    <button type="submit" class="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition">
+                        Finalizar Compra
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-r from-red-50 to-orange-50">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0 fade-in">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Auténtico Sushi Japonés</h1>
+                <p class="text-lg text-gray-600 mb-6">Disfruta de los sabores tradicionales de Japón con ingredientes frescos y de la más alta calidad.</p>
+                <div class="flex space-x-4">
+                    <a href="#menu" class="reserve-btn px-6 py-3 rounded-full text-white font-medium">Ver Menú</a>
+                    <a href="#contact" class="px-6 py-3 border-2 border-red-500 text-red-500 rounded-full font-medium hover:bg-red-500 hover:text-white transition">Reservar</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 fade-in delay-1">
+                <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                     alt="Sushi fresco" 
+                     class="rounded-lg shadow-xl w-full h-auto max-h-96 object-cover">
+            </div>
+        </div>
+    </section>
+
+    <!-- Special Offers -->
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="bg-red-500 rounded-xl p-6 shadow-lg text-white">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-2xl font-bold mb-2">¡Oferta Especial!</h2>
+                        <p class="text-red-100">2x1 en todos los rolls los martes y jueves</p>
+                    </div>
+                    <button class="px-6 py-2 bg-white text-red-500 rounded-full font-medium hover:bg-gray-100 transition">
+                        Ver Detalles
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12 fade-in">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Nuestro Menú</h2>
+                <div class="w-20 h-1 bg-red-500 mx-auto mb-4"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">Selecciona entre nuestra variedad de sushi fresco preparado al momento por nuestros chefs expertos.</p>
+            </div>
+            
+            <!-- Filtros de categoría -->
+            <div class="flex justify-center mb-8 overflow-x-auto pb-2">
+                <div class="flex space-x-2">
+                    <button class="category-btn px-4 py-2 bg-red-500 text-white rounded-full text-sm font-medium" data-category="all">Todo</button>
+                    <button class="category-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium hover:bg-red-500 hover:text-white transition" data-category="rolls">Rolls</button>
+                    <button class="category-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium hover:bg-red-500 hover:text-white transition" data-category="nigiri">Nigiri</button>
+                    <button class="category-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium hover:bg-red-500 hover:text-white transition" data-category="sashimi">Sashimi</button>
+                    <button class="category-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium hover:bg-red-500 hover:text-white transition" data-category="bebidas">Bebidas</button>
+                </div>
+            </div>
+            
+            <!-- Items del menú -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="menu-items">
+                <!-- Los items del menú se generarán dinámicamente con JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12 fade-in">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Galería</h2>
+                <div class="w-20 h-1 bg-red-500 mx-auto mb-4"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">Un vistazo a nuestros platos más populares y el ambiente de nuestro restaurante.</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80" 
+                         alt="Variedad de sushi" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1617196035154-1e7e6e28b0db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" 
+                         alt="Sushi roll" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1132&q=80" 
+                         alt="Chef preparando sushi" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd0c9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80" 
+                         alt="Interior del restaurante" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1611270630255-8a51953a1f9f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" 
+                         alt="Sushi variado" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1132&q=80" 
+                         alt="Chef cortando pescado" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1617196035154-1e7e6e28b0db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" 
+                         alt="Sushi en bandeja" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd0c9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80" 
+                         alt="Barra de sushi" 
+                         class="w-full h-48 object-cover hover:scale-105 transition duration-500">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8 fade-in">
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a8e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80" 
+                         alt="Chef preparando sushi" 
+                         class="rounded-lg shadow-xl w-full h-auto max-h-96 object-cover">
+                </div>
+                <div class="md:w-1/2 fade-in delay-1">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Nuestra Historia</h2>
+                    <div class="w-20 h-1 bg-red-500 mb-6"></div>
+                    <p class="text-gray-600 mb-4">Fundado en 2010, Sakura Sushi nació del sueño de traer la auténtica experiencia del sushi japonés a tu ciudad. Nuestro chef principal, Hiroshi Tanaka, aprendió el arte del sushi en Tokio y ha dedicado su vida a perfeccionar esta delicada cocina.</p>
+                    <p class="text-gray-600 mb-6">Utilizamos solo los ingredientes más frescos, importando directamente de Japón cuando es necesario, para garantizar la autenticidad de cada bocado.</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-red-500 mr-2"></i>
+                            <span>Ingredientes frescos</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-red-500 mr-2"></i>
+                            <span>Técnicas tradicionales</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-red-500 mr-2"></i>
+                            <span>Ambiente auténtico</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-red-500 mr-2"></i>
+                            <span>Servicio excepcional</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Lo que dicen nuestros clientes</h2>
+                <div class="w-20 h-1 bg-red-500 mx-auto mb-4"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-500 mr-4">
+                            <i class="fas fa-user text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">María González</h4>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"El mejor sushi que he probado en la ciudad. La atención es excelente y los sabores son auténticos. ¡Recomiendo el rollo Sakura especial!"</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-500 mr-4">
+                            <i class="fas fa-user text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">Carlos Martínez</h4>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Increíble experiencia gastronómica. El chef nos preparó un omakase personalizado que fue una verdadera obra de arte. Volveré pronto."</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-500 mr-4">
+                            <i class="fas fa-user text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">Laura Fernández</h4>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Ambiente muy acogedor y comida excepcional. Me encanta que tienen opciones vegetarianas creativas además del sushi tradicional."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12 fade-in">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Contáctanos</h2>
+                <div class="w-20 h-1 bg-red-500 mx-auto mb-4"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">Reserva tu mesa o envíanos un mensaje. Estamos aquí para hacerte vivir una experiencia gastronómica inolvidable.</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/2 bg-white p-8 rounded-lg shadow-md fade-in">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Envía un mensaje</h3>
+                    <form id="contact-form" action="https://formspree.io/f/manbdypw" method="POST">
+                        <div class="mb-4">
+                            <label for="name" class="block text-gray-700 mb-2">Nombre</label>
+                            <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-gray-700 mb-2">Email</label>
+                            <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="phone" class="block text-gray-700 mb-2">Teléfono</label>
+                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="block text-gray-700 mb-2">Mensaje</label>
+                            <textarea id="message" name="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-red-500 text-white py-3 rounded font-medium hover:bg-red-600 transition">
+                            Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="md:w-1/2 fade-in delay-1">
+                    <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Información de contacto</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt text-red-500 mt-1 mr-4"></i>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Dirección</h4>
+                                    <p class="text-gray-600">Residencial Felipe III, Santo Domingo, República Dominicana</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-phone-alt text-red-500 mt-1 mr-4"></i>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Teléfono</h4>
+                                    <p class="text-gray-600">+1 234 567 890</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-red-500 mt-1 mr-4"></i>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Email</h4>
+                                    <p class="text-gray-600">info@sakurasushi.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-clock text-red-500 mt-1 mr-4"></i>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Horario</h4>
+                                    <p class="text-gray-600">Lunes a Viernes: 11:00 - 22:00</p>
+                                    <p class="text-gray-600">Sábado y Domingo: 12:00 - 23:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Reserva una mesa</h3>
+                        <form id="reservation-form" action="https://formspree.io/f/manbdypw" method="POST">
+                            <div class="mb-4">
+                                <label for="reservation-name" class="block text-gray-700 mb-2">Nombre</label>
+                                <input type="text" id="reservation-name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="reservation-date" class="block text-gray-700 mb-2">Fecha</label>
+                                <input type="date" id="reservation-date" name="date" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="reservation-time" class="block text-gray-700 mb-2">Hora (11:00 - 22:00)</label>
+                                <input type="time" id="reservation-time" name="time" min="11:00" max="22:00" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="reservation-guests" class="block text-gray-700 mb-2">Número de personas</label>
+                                <select id="reservation-guests" name="guests" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                    <option value="1">1 persona</option>
+                                    <option value="2">2 personas</option>
+                                    <option value="3">3 personas</option>
+                                    <option value="4">4 personas</option>
+                                    <option value="5">5 personas</option>
+                                    <option value="6">6+ personas</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-red-500 text-white py-3 rounded font-medium hover:bg-red-600 transition">
+                                Reservar Ahora
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map -->
+    <div class="h-96 w-full bg-gray-200">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.1264322705!2d-69.9347889242396!3d18.4859759713895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e56289a5a3d4a3f%3A0x9f7d1a3b1a3d4a3f!2sResidencial%20Felipe%20III%2C%20Santo%20Domingo%2011002%2C%20Rep%C3%BAblica%20Dominicana!5e0!3m2!1ses!2sdo!4v1689874101233!5m2!1ses!2sdo"
+            width="100%"
+            height="100%"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Sakura Sushi</h3>
+                    <p class="text-gray-400">Auténtico sushi japonés preparado con ingredientes frescos y técnicas tradicionales.</p>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition">Inicio</a></li>
+                        <li><a href="#menu" class="text-gray-400 hover:text-white transition">Menú</a></li>
+                        <li><a href="#gallery" class="text-gray-400 hover:text-white transition">Galería</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition">Nosotros</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white transition">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Horario</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex justify-between"><span>Lunes - Viernes:</span> <span>11:00 - 22:00</span></li>
+                        <li class="flex justify-between"><span>Sábado:</span> <span>12:00 - 23:00</span></li>
+                        <li class="flex justify-between"><span>Domingo:</span> <span>12:00 - 23:00</span></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Newsletter</h4>
+                    <p class="text-gray-400 mb-4">Suscríbete para recibir nuestras ofertas especiales y novedades.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Tu email" class="px-4 py-2 text-gray-800 rounded-l focus:outline-none w-full">
+                        <button type="submit" class="bg-red-500 px-4 py-2 rounded-r hover:bg-red-600 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 Eljuga. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-red-500 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition hidden">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Datos del menú
+            const menuItems = [
+                {
+                    id: 1,
+                    name: "California Roll",
+                    description: "Cangrejo, pepino, aguacate y tobiko",
+                    price: 12.99,
+                    category: "rolls",
+                    image: "https://images.unsplash.com/photo-1617196035154-1e7e6e28b0db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+                },
+                {
+                    id: 2,
+                    name: "Salmón Nigiri",
+                    description: "Fresco salmón sobre arroz sazonado",
+                    price: 3.50,
+                    category: "nigiri",
+                    image: "https://images.unsplash.com/photo-1611143669185-af224c5e3252?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1132&q=80"
+                },
+                {
+                    id: 3,
+                    name: "Sashimi Variado",
+                    description: "Selección de 12 piezas de sashimi fresco",
+                    price: 18.99,
+                    category: "sashimi",
+                    image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd0c9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80"
+                },
+                {
+                    id: 4,
+                    name: "Dragon Roll",
+                    description: "Anguila, pepino, aguacate y salsa especial",
+                    price: 15.99,
+                    category: "rolls",
+                    image: "https://images.unsplash.com/photo-1611270630255-8a51953a1f9f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+                },
+                {
+                    id: 5,
+                    name: "Atún Nigiri",
+                    description: "Fresco atún sobre arroz sazonado",
+                    price: 4.00,
+                    category: "nigiri",
+                    image: "https://images.unsplash.com/photo-1611143669185-af224c5e3252?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1132&q=80"
+                },
+                {
+                    id: 6,
+                    name: "Tempura Roll",
+                    description: "Camarón tempura, aguacate y salsa eel",
+                    price: 13.50,
+                    category: "rolls",
+                    image: "https://images.unsplash.com/photo-1617196035154-1e7e6e28b0db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+                },
+                {
+                    id: 7,
+                    name: "Sake (Vino de Arroz)",
+                    description: "Auténtico sake japonés",
+                    price: 8.00,
+                    category: "bebidas",
+                    image: "https://images.unsplash.com/photo-1554866585-cd3f96141c06?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                },
+                {
+                    id: 8,
+                    name: "Té Verde",
+                    description: "Té verde japonés tradicional",
+                    price: 3.00,
+                    category: "bebidas",
+                    image: "https://images.unsplash.com/photo-1567168539593-59673ababaae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1137&q=80"
+                },
+                {
+                    id: 9,
+                    name: "Sashimi de Salmón",
+                    description: "10 piezas de fresco salmón",
+                    price: 14.99,
+                    category: "sashimi",
+                    image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd0c9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80"
+                }
+            ];
+
+            // Variables para el carrito
+            let cart = [];
+            let total = 0;
+
+            // Generar items del menú
+            function renderMenuItems(category = 'all') {
+                const menuContainer = document.getElementById('menu-items');
+                menuContainer.innerHTML = '';
+                
+                const filteredItems = category === 'all' 
+                    ? menuItems 
+                    : menuItems.filter(item => item.category === category);
+                
+                filteredItems.forEach(item => {
+                    const menuItem = document.createElement('div');
+                    menuItem.className = 'sushi-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-lg';
+                    menuItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-lg">${item.name}</h3>
+                                <span class="text-red-500 font-bold">$${item.price.toFixed(2)}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">${item.description}</p>
+                            <button class="add-to-cart w-full bg-gray-100 text-gray-800 py-2 rounded font-medium hover:bg-red-500 hover:text-white transition" 
+                                    data-id="${item.id}" 
+                                    data-name="${item.name}" 
+                                    data-price="${item.price}">
+                                Añadir al carrito
+                            </button>
+                        </div>
+                    `;
+                    menuContainer.appendChild(menuItem);
+                });
+            }
+
+            // Renderizar todos los items al cargar
+            renderMenuItems();
+
+            // Filtrar por categoría
+            document.querySelectorAll('.category-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover clase activa de todos los botones
+                    document.querySelectorAll('.category-btn').forEach(btn => {
+                        btn.className = btn.className.replace('bg-red-500 text-white', 'bg-gray-200 text-gray-700 hover:bg-red-500 hover:text-white');
+                    });
+                    
+                    // Agregar clase activa al botón clickeado
+                    this.className = this.className.replace('bg-gray-200 text-gray-700 hover:bg-red-500 hover:text-white', 'bg-red-500 text-white');
+                    
+                    // Filtrar items
+                    const category = this.getAttribute('data-category');
+                    renderMenuItems(category);
+                });
+            });
+
+            // Menú móvil
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const closeMobileMenu = document.getElementById('close-mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.remove('hidden');
+            });
+            
+            closeMobileMenu.addEventListener('click', function() {
+                mobileMenu.classList.add('hidden');
+            });
+
+            // Carrito de compras
+            const cartIcon = document.getElementById('cart-icon');
+            const shoppingCart = document.getElementById('shopping-cart');
+            const closeCart = document.getElementById('close-cart');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            
+            cartIcon.addEventListener('click', function() {
+                shoppingCart.classList.toggle('hidden');
+            });
+            
+            closeCart.addEventListener('click', function() {
+                shoppingCart.classList.add('hidden');
+            });
+
+            // Añadir al carrito
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('add-to-cart') || e.target.closest('.add-to-cart')) {
+                    const button = e.target.classList.contains('add-to-cart') ? e.target : e.target.closest('.add-to-cart');
+                    const id = button.getAttribute('data-id');
+                    const name = button.getAttribute('data-name');
+                    const price = parseFloat(button.getAttribute('data-price'));
+                    
+                    // Verificar si el item ya está en el carrito
+                    const existingItem = cart.find(item => item.id === id);
+                    
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.push({
+                            id,
+                            name,
+                            price,
+                            quantity: 1
+                        });
+                    }
+                    
+                    // Actualizar total
+                    total += price;
+                    
+                    // Actualizar UI
+                    updateCartUI();
+                    
+                    // Mostrar notificación
+                    showNotification(`${name} añadido al carrito`);
+                    
+                    // Mostrar carrito si está oculto
+                    if (shoppingCart.classList.contains('hidden')) {
+                        shoppingCart.classList.remove('hidden');
+                    }
+                }
+                
+                // Eliminar item del carrito
+                if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
+                    const button = e.target.classList.contains('remove-item') ? e.target : e.target.closest('.remove-item');
+                    const id = button.getAttribute('data-id');
+                    const itemIndex = cart.findIndex(item => item.id === id);
+                    
+                    if (itemIndex !== -1) {
+                        // Restar del total
+                        total -= cart[itemIndex].price * cart[itemIndex].quantity;
+                        
+                        // Eliminar del carrito
+                        cart.splice(itemIndex, 1);
+                        
+                        // Actualizar UI
+                        updateCartUI();
+                        
+                        // Mostrar notificación
+                        showNotification('Producto eliminado del carrito');
+                    }
+                }
+                
+                // Ajustar cantidad (disminuir)
+                if (e.target.classList.contains('decrease-quantity') || e.target.closest('.decrease-quantity')) {
+                    const button = e.target.classList.contains('decrease-quantity') ? e.target : e.target.closest('.decrease-quantity');
+                    const id = button.getAttribute('data-id');
+                    const item = cart.find(item => item.id === id);
+                    
+                    if (item && item.quantity > 1) {
+                        item.quantity -= 1;
+                        total -= item.price;
+                        updateCartUI();
+                    } else if (item && item.quantity === 1) {
+                        // Si la cantidad es 1 y se presiona disminuir, eliminar el producto
+                        const itemIndex = cart.findIndex(i => i.id === id);
+                        if (itemIndex !== -1) {
+                            total -= item.price;
+                            cart.splice(itemIndex, 1);
+                            updateCartUI();
+                            showNotification('Producto eliminado del carrito');
+                        }
+                    }
+                }
+                
+                // Ajustar cantidad (aumentar)
+                if (e.target.classList.contains('increase-quantity') || e.target.closest('.increase-quantity')) {
+                    const button = e.target.classList.contains('increase-quantity') ? e.target : e.target.closest('.increase-quantity');
+                    const id = button.getAttribute('data-id');
+                    const item = cart.find(item => item.id === id);
+                    
+                    if (item) {
+                        item.quantity += 1;
+                        total += item.price;
+                        updateCartUI();
+                    }
+                }
+            });
+
+            // Actualizar UI del carrito
+            function updateCartUI() {
+                // Actualizar contador
+                const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = itemCount;
+                
+                // Actualizar items
+                cartItemsContainer.innerHTML = '';
+                
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Tu carrito está vacío</p>';
+                } else {
+                    cart.forEach(item => {
+                        const cartItem = document.createElement('div');
+                        cartItem.className = 'cart-item flex justify-between items-center py-4 border-b';
+                        cartItem.innerHTML = `
+                            <div class="flex-1">
+                                <h4 class="font-medium">${item.name}</h4>
+                                <p class="text-gray-600 text-sm">${item.price.toFixed(2)} c/u</p>
+                            </div>
+                            <div class="flex items-center">
+                                <button class="decrease-quantity px-2 text-gray-500 hover:text-red-500" data-id="${item.id}">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="mx-2 w-8 text-center">${item.quantity}</span>
+                                <button class="increase-quantity px-2 text-gray-500 hover:text-red-500" data-id="${item.id}">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="font-medium w-20 text-right">${(item.price * item.quantity).toFixed(2)}</div>
+                            <button class="remove-item ml-4 text-red-500 hover:text-red-600" data-id="${item.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        `;
+                        cartItemsContainer.appendChild(cartItem);
+                    });
+                }
+                
+                // Actualizar total
+                cartTotal.textContent = `${total.toFixed(2)}`;
+                
+                // Mostrar/ocultar carrito si está vacío
+                if (cart.length === 0 && !shoppingCart.classList.contains('hidden')) {
+                    shoppingCart.classList.add('hidden');
+                }
+            }
+
+            // Mostrar notificación
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg flex items-center';
+                notification.innerHTML = `
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            }
+
+            // Formularios
+            document.getElementById('contact-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        showNotification('Mensaje enviado con éxito. Nos pondremos en contacto contigo pronto.');
+                        form.reset();
+                    } else {
+                        showNotification('Hubo un error al enviar el mensaje. Por favor inténtalo de nuevo.');
+                    }
+                } catch (error) {
+                    showNotification('Error de conexión. Por favor inténtalo más tarde.');
+                }
+            });
+            
+            document.getElementById('reservation-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const timeInput = document.getElementById('reservation-time');
+                const selectedTime = timeInput.value;
+                const hours = parseInt(selectedTime.split(':')[0]);
+                
+                // Validar horario de 11:00 a 22:00
+                if (hours < 11 || hours >= 22) {
+                    showNotification('Por favor selecciona una hora entre 11:00 y 22:00');
+                    return;
+                }
+                
+                const formData = new FormData(form);
+                
+                // Agregar datos adicionales si es necesario
+                formData.append('form-type', 'reservation');
+                
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        showNotification('Reserva realizada con éxito. Te esperamos!');
+                        form.reset();
+                    } else {
+                        const errorData = await response.json();
+                        let errorMessage = 'Hubo un error al procesar la reserva.';
+                        if (errorData.errors) {
+                            errorMessage += ' ' + Object.values(errorData.errors).join(' ');
+                        }
+                        showNotification(errorMessage);
+                    }
+                } catch (error) {
+                    showNotification('Error de conexión. Por favor inténtalo más tarde.');
+                }
+            });
+
+            // Formulario de checkout
+            document.getElementById('checkout-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Formatear los items del carrito para el email
+                let cartDetails = '';
+                cart.forEach(item => {
+                    cartDetails += `${item.name} (${item.quantity} x ${item.price.toFixed(2)}) - ${(item.price * item.quantity).toFixed(2)}\n`;
+                });
+                
+                // Actualizar los campos ocultos
+                document.getElementById('cart-items-data').value = cartDetails;
+                document.getElementById('cart-total-data').value = total.toFixed(2);
+                
+                // Enviar el formulario
+                this.submit();
+                
+                // Vaciar el carrito después de enviar
+                cart = [];
+                total = 0;
+                updateCartUI();
+                showNotification('Pedido enviado con éxito. ¡Gracias por tu compra!');
+            });
+
+            // Botón de volver arriba
+            const backToTopButton = document.getElementById('back-to-top');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.remove('hidden');
+                } else {
+                    backToTopButton.classList.add('hidden');
+                }
+            });
+            
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Smooth scrolling para enlaces
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Cerrar menú móvil si está abierto
+                        if (!mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            // Highlight active section in navigation
+            window.addEventListener('scroll', function() {
+                const sections = ['home', 'menu', 'gallery', 'about', 'contact'];
+                const navLinks = document.querySelectorAll('nav a');
+                
+                let current = '';
+                sections.forEach(section => {
+                    const sectionEl = document.getElementById(section);
+                    if (sectionEl) {
+                        const sectionTop = sectionEl.offsetTop;
+                        const sectionHeight = sectionEl.clientHeight;
+                        if (pageYOffset >= (sectionTop - 100) && pageYOffset < (sectionTop + sectionHeight - 100)) {
+                            current = section;
+                        }
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+
+                // Also highlight in mobile menu
+                const mobileLinks = document.querySelectorAll('.mobile-menu-overlay nav a');
+                mobileLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Animaciones al hacer scroll
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.fade-in');
+                
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+                    
+                    if (elementPosition < screenPosition) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            };
+            
+            window.addEventListener('scroll', animateOnScroll);
+            animateOnScroll(); // Ejecutar al cargar la página
+        });
+    </script>
+</body>
+</html>
